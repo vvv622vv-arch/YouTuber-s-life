@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي اليوتيوبر Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="toast-container" class="toast-hidden"></div>
+
+<div class="yt-container">
+    <header class="yt-header">
+        <div class="h-right">
+            <span class="menu-icon">☰</span>
+            <div class="logo">YouTube <span class="studio-text">Studio</span></div>
+        </div>
+        <div class="h-left">
+            <div class="money-badge" id="stat-money">$0.00</div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <button class="side-btn active" onclick="Game.switchPage('page-channel', this)">🏠 القناة</button>
+            <button class="side-btn" onclick="Game.switchPage('page-studio', this)">🎥 إنشاء</button>
+            <button class="side-btn" onclick="Game.switchPage('page-bank', this)">🏦 البنك</button>
+            <button class="side-btn" onclick="Game.switchPage('page-shop', this)">🛒 المتجر</button>
+            <hr>
+            <button class="side-btn delete-btn" onclick="Game.resetGame()">🗑️ تصفير</button>
+        </aside>
+
+        <main class="content-area">
+            <section id="page-channel" class="view-section active">
+                <div class="channel-header">
+                    <div class="avatar-container" onclick="Game.customizeChannel()" title="اضغط لتغيير الصورة">
+                        <div class="avatar-big" id="pfp-display">👤</div>
+                        <div id="trophy-badge" class="trophy-badge"></div>
+                    </div>
+                    <h1 id="channel-name-display" onclick="Game.customizeChannel()" title="اضغط لتغيير الاسم" style="cursor: pointer;">اسم القناة</h1>
+                    <div class="channel-stats-row">
+                        <span id="stat-subs">0</span> مشترك • <span id="stat-vids">0</span> فيديو
+                    </div>
+                </div>
+                
+                <div class="filter-bar">
+                    <button class="filter-btn active" onclick="Game.filterContent('all', this)">الكل</button>
+                    <button class="filter-btn" onclick="Game.filterContent('🎥 فيديو طويل', this)">فيديوهات</button>
+                    <button class="filter-btn" onclick="Game.filterContent('📱 Shorts', this)">Shorts</button>
+                    <button class="filter-btn" onclick="Game.filterContent('🔴 بث مباشر', this)">بث مباشر</button>
+                </div>
+                <div class="video-grid" id="video-display"></div>
+            </section>
+
+            <section id="page-bank" class="view-section">
+                <div class="bank-ui">
+                    <div class="visa">
+                        <small>الرصيد الكلي</small>
+                        <h1 id="stat-money-bank">$0.00</h1>
+                    </div>
+                    <div class="security-card-giant">
+                        <h3>🛡️ نظام أمن القناة</h3>
+                        <p id="shield-text" style="font-weight: bold; margin: 10px 0;">الحماية: غير مفعلة</p>
+                        <p id="shield-timer" style="color: #666; font-size: 14px; margin-bottom: 20px;">أنت معرض لسرقة 15% من أموالك!</p>
+                        <button class="giant-shield-btn" onclick="Game.buyShield()">شراء حماية ضد الاختراق ($1,000)</button>
+                    </div>
+                    <div class="bank-info-row">أرباح معلقة: <span id="pending-display">$0.00</span></div>
+                    <div class="bank-info-row">الوقت المتبقي للسحب: <span id="timer">10:00</span></div>
+                </div>
+            </section>
+
+            <section id="page-studio" class="view-section">
+                <div class="studio-card">
+                    <h1 class="giant-title">🎬 نشر محتوى جديد</h1>
+                    <div class="giant-input-group">
+                        <label>العنوان</label>
+                        <input type="text" id="input-title" class="mega-input" placeholder="عنوان المقطع...">
+                    </div>
+                    <div class="giant-input-group">
+                        <label>الشكل</label>
+                        <select id="input-style" class="mega-input">
+                            <option value="🎥 فيديو طويل">🎥 فيديو طويل</option>
+                            <option value="📱 Shorts">📱 Shorts</option>
+                            <option value="🔴 بث مباشر">🔴 بث مباشر</option>
+                        </select>
+                    </div>
+                    <div class="giant-input-group">
+                        <label>النوع</label>
+                        <select id="input-type" class="mega-input">
+                            <option value="ألعاب">🎮 ألعاب</option>
+                            <option value="فلوق">🤳 فلوق</option>
+                            <option value="تقنية">💻 تقنية</option>
+                        </select>
+                    </div>
+                    <button class="giant-pub-btn" onclick="Game.publish()">نشر الآن 🚀</button>
+                </div>
+            </section>
+
+            <section id="page-shop" class="view-section">
+                <div class="shop-grid" id="shop-display"></div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
