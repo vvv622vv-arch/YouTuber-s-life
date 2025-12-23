@@ -1,6 +1,6 @@
 const Game = {
-    money: 1000, subs: 0, videos: [], inventory: [],
-    channelName: "قناة الأساطير", avatar: "👤", currentFilter: 'all',
+    money: 1200, subs: 0, videos: [], inventory: [],
+    channelName: "قناة النجم", avatar: "👤", currentFilter: 'all',
     activeGv: { active: false, timer: 0, item: "", participants: 0 },
 
     init() {
@@ -16,73 +16,72 @@ const Game = {
             money: this.money, subs: this.subs, videos: this.videos,
             inventory: this.inventory, channelName: this.channelName, avatar: this.avatar
         };
-        localStorage.setItem('YT_SIM_V3_SAVE', JSON.stringify(data));
+        localStorage.setItem('YT_SIM_V4_SAVE', JSON.stringify(data));
     },
 
     load() {
-        const saved = localStorage.getItem('YT_SIM_V3_SAVE');
+        const saved = localStorage.getItem('YT_SIM_V4_SAVE');
         if (saved) Object.assign(this, JSON.parse(saved));
     },
 
-    // إصلاح النشر
     publishVideo() {
         const titleInput = document.getElementById('video-title');
         const styleInput = document.getElementById('video-style');
         
         if (!titleInput.value.trim()) {
-            this.showToast("يا أسطورة اكتب عنوان المقطع!", "error");
+            this.showToast("⚠️ أدخل عنوان الفيديو أولاً!", "error");
             return;
         }
 
-        let views = Math.floor(Math.random() * 5000 + 50);
+        let views = Math.floor(Math.random() * 8000 + 100);
         const newVideo = {
             title: titleInput.value,
             style: styleInput.value,
             views: views,
-            id: Date.now()
+            time: new Date().toLocaleDateString()
         };
 
         this.videos.unshift(newVideo);
-        this.subs += Math.floor(views * 0.02);
-        this.money += Math.floor(views * 0.01);
+        this.subs += Math.floor(views * 0.015);
+        this.money += Math.floor(views * 0.012);
 
-        titleInput.value = ""; // تصفير الحقل
-        this.showToast("🚀 تم نشر المقطع بنجاح!", "success");
+        titleInput.value = "";
+        this.showToast("✅ تم نشر الفيديو بنجاح!", "success");
         this.save();
         this.updateUI();
         this.renderVideos();
     },
 
     generateAmazon() {
-        const products = [
-            {n: "Sony PS5 Pro", p: 700, i: "🎮"},
-            {n: "PC High-End", p: 3000, i: "🖥️"},
+        const items = [
+            {n: "PS5 Console", p: 500, i: "🎮"},
+            {n: "Gaming PC", p: 2500, i: "🖥️"},
             {n: "iPhone 15", p: 1000, i: "📱"},
-            {n: "شاشة 4K", p: 500, i: "📺"}
+            {n: "Headset Pro", p: 200, i: "🎧"}
         ];
         const grid = document.getElementById('amazon-products');
         grid.innerHTML = "";
         for (let i = 0; i < 100; i++) {
-            const item = products[i % products.length];
-            const price = item.p + (i * 10);
+            const item = items[i % items.length];
+            const price = item.p + (i * 8);
             grid.innerHTML += `
-                <div class="v-card" style="padding:15px; text-align:center;">
-                    <div style="font-size:40px;">${item.i}</div>
-                    <h3>${item.n}</h3>
-                    <p style="color:red; font-weight:bold; margin:10px 0;">$${price}</p>
-                    <button onclick="Game.buyItem('${item.n}', ${price})" style="width:100%; padding:8px; cursor:pointer;">شراء للمخزن</button>
+                <div class="video-item" style="padding: 20px; text-align: center;">
+                    <div style="font-size: 50px;">${item.i}</div>
+                    <h3 style="margin: 10px 0;">${item.n}</h3>
+                    <p style="color: #e67e22; font-weight: bold; font-size: 20px;">$${price}</p>
+                    <button class="big-action-btn blue-bg" style="padding: 10px; margin-top: 10px; font-size: 16px;" onclick="Game.buyItem('${item.n}', ${price})">شراء للمخزن</button>
                 </div>`;
         }
     },
 
-    buyItem(name, price) {
-        if (this.money >= price) {
-            this.money -= price;
-            this.inventory.push(name);
-            this.showToast(`تم شراء ${name} للمخزن!`, "success");
+    buyItem(n, p) {
+        if (this.money >= p) {
+            this.money -= p;
+            this.inventory.push(n);
+            this.showToast(`🛍️ اشتريت ${n}!`, "success");
             this.updateInventorySelect();
             this.save(); this.updateUI();
-        } else this.showToast("ما عندك فلوس كافية!", "error");
+        } else this.showToast("❌ رصيدك لا يكفي!", "error");
     },
 
     updateInventorySelect() {
@@ -90,21 +89,21 @@ const Game = {
         if (!sel) return;
         sel.innerHTML = this.inventory.length > 0 
             ? this.inventory.map((it, idx) => `<option value="${idx}">${it}</option>`).join('')
-            : "<option>المخزن فارغ (اشترِ جوائز)</option>";
+            : "<option>المخزن فارغ - اشترِ من المتجر</option>";
     },
 
     startGiveaway() {
-        if (this.inventory.length === 0) return this.showToast("اشترِ جائزة من المتجر أولاً!", "error");
-        if (this.activeGv.active) return this.showToast("فيه سحب شغال!", "error");
+        if (this.inventory.length === 0) return this.showToast("❌ لا تملك جوائز!", "error");
+        if (this.activeGv.active) return this.showToast("⚠️ هناك سحب جارٍ!", "error");
 
         const idx = document.getElementById('gv-inventory-select').value;
         const item = this.inventory[idx];
         
         this.activeGv = { active: true, timer: 30, item: item, participants: 0 };
-        this.inventory.splice(idx, 1); // حذف من المخزن
+        this.inventory.splice(idx, 1);
 
-        this.videos.unshift({ title: `🎁 سحب مباشر على ${item}`, style: "🎁 قيفاوي", views: 0 });
-        document.getElementById('gv-live-box').classList.remove('hidden');
+        this.videos.unshift({ title: `🎁 مسابقة كبرى على ${item}`, style: "🎁 قيفاوي", views: 0 });
+        document.getElementById('gv-live-panel').classList.remove('hidden');
         this.updateInventorySelect();
         this.renderVideos();
     },
@@ -113,7 +112,7 @@ const Game = {
         setInterval(() => {
             if (this.activeGv.active) {
                 this.activeGv.timer--;
-                this.activeGv.participants += Math.floor(this.subs * 0.1 + Math.random() * 50);
+                this.activeGv.participants += Math.floor(this.subs * 0.05 + Math.random() * 100);
                 if (this.activeGv.timer <= 0) this.endGiveaway();
                 this.updateGvUI();
             }
@@ -122,29 +121,29 @@ const Game = {
 
     endGiveaway() {
         this.activeGv.active = false;
-        document.getElementById('gv-live-box').classList.add('hidden');
-        const bonusSubs = Math.floor(this.activeGv.participants * 0.2);
-        this.subs += bonusSubs;
+        document.getElementById('gv-live-panel').classList.add('hidden');
+        const bonus = Math.floor(this.activeGv.participants * 0.1);
+        this.subs += bonus;
         this.videos[0].views = this.activeGv.participants;
-        this.showToast(`🎊 انتهى القيفاوي! كسبت ${bonusSubs} مشترك!`, "success");
+        this.showToast(`🎊 مبروك! كسبت ${bonus} مشترك!`, "success");
         this.save(); this.updateUI(); this.renderVideos();
     },
 
     updateGvUI() {
         document.getElementById('live-item').innerText = this.activeGv.item;
         document.getElementById('live-count').innerText = this.activeGv.participants.toLocaleString();
-        document.getElementById('live-timer').innerText = this.activeGv.timer + "ث";
+        document.getElementById('live-timer').innerText = this.activeGv.timer + " ثانية";
     },
 
     renderVideos() {
         const cont = document.getElementById('video-display');
         const list = this.currentFilter === 'all' ? this.videos : this.videos.filter(v => v.style === this.currentFilter);
         cont.innerHTML = list.map(v => `
-            <div class="v-card">
-                <div class="thumb">${v.style.includes('Shorts') ? '📱' : '🎬'}</div>
-                <div style="padding:15px;">
-                    <h3>${v.title}</h3>
-                    <p style="font-size:13px; color:#606060;">${v.views.toLocaleString()} مشاهدة • ${v.style}</p>
+            <div class="video-item">
+                <div class="v-thumb">${v.style.includes('Shorts') ? '📱' : '🎬'}</div>
+                <div class="v-info">
+                    <h3 style="font-size: 18px;">${v.title}</h3>
+                    <p style="color: #666; margin-top: 5px;">${v.views.toLocaleString()} مشاهدة • ${v.style}</p>
                 </div>
             </div>
         `).join('');
@@ -152,15 +151,15 @@ const Game = {
 
     filterContent(f, btn) {
         this.currentFilter = f;
-        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.renderVideos();
     },
 
     switchPage(id, btn) {
-        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         if (id === 'page-giveaway') this.updateInventorySelect();
     },
@@ -181,12 +180,12 @@ const Game = {
     },
 
     customizeChannel() {
-        const n = prompt("اسم قناتك الجديد:", this.channelName);
+        const n = prompt("تغيير اسم القناة:", this.channelName);
         if (n) { this.channelName = n; this.save(); this.updateUI(); }
     },
 
     resetGame() {
-        if (confirm("هل تريد مسح كل شيء؟")) { localStorage.clear(); location.reload(); }
+        if (confirm("سيتم مسح كل شيء.. هل أنت متأكد؟")) { localStorage.clear(); location.reload(); }
     }
 };
 
