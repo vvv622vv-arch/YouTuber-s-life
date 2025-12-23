@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي اليوتيوبر Pro - نسخة أمازون</title>
+    <title>YouTube Studio - Pro Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,46 +17,48 @@
             <div class="logo">YouTube <span class="studio-text">Studio</span></div>
         </div>
         <div class="h-left">
-            <div class="money-badge" id="stat-money">$0.00</div>
+            <div class="money-badge">الرصيد: <span id="stat-money">$0</span></div>
         </div>
     </header>
 
     <div class="main-layout">
         <aside class="sidebar">
-            <button class="side-btn active" onclick="Game.switchPage('page-channel', this)">🏠 القناة</button>
-            <button class="side-btn" onclick="Game.switchPage('page-studio', this)">🎥 إنشاء</button>
-            <button class="side-btn amazon-tab" onclick="Game.switchPage('page-amazon', this)">📦 أمازون (Giveaway)</button>
-            <button class="side-btn" onclick="Game.switchPage('page-bank', this)">🏦 البنك</button>
-            <button class="side-btn" onclick="Game.switchPage('page-shop', this)">🛒 تطوير القناة</button>
-            <hr>
-            <button class="side-btn delete-btn" onclick="Game.resetGame()">🗑️ تصفير</button>
+            <button class="side-btn active" onclick="Game.switchPage('page-channel', this)">🏠 لوحة البيانات</button>
+            <button class="side-btn" onclick="Game.switchPage('page-studio', this)">🎥 المحتوى (نشر)</button>
+            <button class="side-btn amazon-tab" onclick="Game.switchPage('page-amazon', this)">🛒 أمازون (Giveaway)</button>
+            <button class="side-btn" onclick="Game.switchPage('page-bank', this)">🏦 البنك والأمان</button>
+            <button class="side-btn" onclick="Game.switchPage('page-shop', this)">⚙️ تطوير القناة</button>
+            <div class="sidebar-footer">
+                <button class="reset-btn" onclick="Game.resetGame()">⚠️ إعادة ضبط المصنع</button>
+            </div>
         </aside>
 
         <main class="content-area">
+            
             <section id="page-channel" class="view-section active">
-                <div class="channel-header">
-                    <div class="avatar-container" onclick="Game.customizeChannel()" title="اضغط لتغيير الأفاتار">
-                        <div class="avatar-big" id="pfp-display">👤</div>
-                        <div id="trophy-badge" class="trophy-badge"></div>
+                <div class="channel-hero">
+                    <div class="pfp-wrap" onclick="Game.customizeChannel()">
+                        <div class="pfp-large" id="pfp-display">👤</div>
+                        <div id="trophy-badge" class="trophy-icon"></div>
                     </div>
-                    <h1 id="channel-name-display" onclick="Game.customizeChannel()" style="cursor: pointer;">اسم القناة</h1>
-                    <div class="channel-stats-row">
-                        <span id="stat-subs">0</span> مشترك • <span id="stat-vids">0</span> فيديو
-                    </div>
+                    <h1 id="channel-name-display" onclick="Game.customizeChannel()">تحميل...</h1>
+                    <div class="sub-count"><span id="stat-subs">0</span> مشترك</div>
                 </div>
+
                 <div class="filter-bar">
                     <button class="filter-btn active" onclick="Game.filterContent('all', this)">الكل</button>
-                    <button class="filter-btn" onclick="Game.filterContent('🎥 فيديو طويل', this)">فيديوهات</button>
+                    <button class="filter-btn" onclick="Game.filterContent('🎥 فيديو', this)">فيديوهات</button>
                     <button class="filter-btn" onclick="Game.filterContent('📱 Shorts', this)">Shorts</button>
+                    <button class="filter-btn" onclick="Game.filterContent('🔴 بث مباشر', this)">بث مباشر</button>
                 </div>
                 <div class="video-grid" id="video-display"></div>
             </section>
 
             <section id="page-amazon" class="view-section">
-                <div class="amazon-banner">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" width="100">
+                <div class="amazon-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" width="100" alt="amazon">
                     <div class="giveaway-timer-box">
-                        <p>🎁 السحب القادم بعد:</p>
+                        <span>السحب على الجوائز:</span>
                         <h2 id="giveaway-timer">05:00</h2>
                     </div>
                 </div>
@@ -64,34 +66,42 @@
             </section>
 
             <section id="page-bank" class="view-section">
-                <div class="bank-ui">
-                    <div class="visa">
-                        <small>الرصيد الكلي</small>
+                <div class="bank-container">
+                    <div class="bank-card">
+                        <small>إجمالي الرصيد</small>
                         <h1 id="stat-money-bank">$0.00</h1>
                     </div>
-                    <div class="security-card-giant">
-                        <h3>🛡️ نظام أمن القناة</h3>
-                        <p id="shield-text" style="margin: 10px 0;">الحماية: غير مفعلة</p>
-                        <button class="giant-shield-btn" onclick="Game.buyShield()">شراء حماية ضد الاختراق ($1,000)</button>
+                    <div class="security-panel">
+                        <h3>🛡️ أمن الحساب</h3>
+                        <p id="shield-status">الحماية غير مفعلة</p>
+                        <button class="buy-shield-btn" onclick="Game.buyShield()">شراء نظام حماية ضد الهكر ($1,500)</button>
                     </div>
                 </div>
             </section>
 
             <section id="page-studio" class="view-section">
-                <div class="studio-card">
-                    <h1>🎬 نشر محتوى جديد</h1>
-                    <input type="text" id="input-title" class="mega-input" placeholder="عنوان المقطع...">
-                    <select id="input-style" class="mega-input">
-                        <option value="🎥 فيديو طويل">🎥 فيديو طويل</option>
-                        <option value="📱 Shorts">📱 Shorts</option>
-                    </select>
-                    <button class="giant-pub-btn" onclick="Game.publish()">نشر الآن 🚀</button>
+                <div class="studio-form">
+                    <h2>🎬 إنشاء محتوى جديد</h2>
+                    <div class="input-group">
+                        <label>عنوان المقطع</label>
+                        <input type="text" id="input-title" placeholder="اكتب عنواناً جذاباً...">
+                    </div>
+                    <div class="input-group">
+                        <label>نوع المحتوى</label>
+                        <select id="input-style">
+                            <option value="🎥 فيديو">🎥 فيديو طويل</option>
+                            <option value="📱 Shorts">📱 Shorts</option>
+                            <option value="🔴 بث مباشر">🔴 بث مباشر</option>
+                        </select>
+                    </div>
+                    <button class="publish-btn" onclick="Game.publish()">نشر الآن 🚀</button>
                 </div>
             </section>
 
             <section id="page-shop" class="view-section">
                 <div class="shop-grid" id="shop-display"></div>
             </section>
+
         </main>
     </div>
 </div>
