@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي اليوتيوبر Pro</title>
+    <title>يوتيوبر برو - متجر أمازون</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,8 +25,9 @@
         <aside class="sidebar">
             <button class="side-btn active" onclick="Game.switchPage('page-channel', this)">🏠 القناة</button>
             <button class="side-btn" onclick="Game.switchPage('page-studio', this)">🎥 إنشاء</button>
+            <button class="side-btn" onclick="Game.switchPage('page-amazon', this)">📦 أمازون (Giveaway)</button>
             <button class="side-btn" onclick="Game.switchPage('page-bank', this)">🏦 البنك</button>
-            <button class="side-btn" onclick="Game.switchPage('page-shop', this)">🛒 المتجر</button>
+            <button class="side-btn" onclick="Game.switchPage('page-shop', this)">🛒 تطوير القناة</button>
             <hr>
             <button class="side-btn delete-btn" onclick="Game.resetGame()">🗑️ تصفير</button>
         </aside>
@@ -34,23 +35,28 @@
         <main class="content-area">
             <section id="page-channel" class="view-section active">
                 <div class="channel-header">
-                    <div class="avatar-container" onclick="Game.customizeChannel()" title="اضغط لتغيير الصورة">
+                    <div class="avatar-container" onclick="Game.customizeChannel()">
                         <div class="avatar-big" id="pfp-display">👤</div>
                         <div id="trophy-badge" class="trophy-badge"></div>
                     </div>
-                    <h1 id="channel-name-display" onclick="Game.customizeChannel()" title="اضغط لتغيير الاسم" style="cursor: pointer;">اسم القناة</h1>
+                    <h1 id="channel-name-display" onclick="Game.customizeChannel()">اسم القناة</h1>
                     <div class="channel-stats-row">
                         <span id="stat-subs">0</span> مشترك • <span id="stat-vids">0</span> فيديو
                     </div>
                 </div>
-                
-                <div class="filter-bar">
-                    <button class="filter-btn active" onclick="Game.filterContent('all', this)">الكل</button>
-                    <button class="filter-btn" onclick="Game.filterContent('🎥 فيديو طويل', this)">فيديوهات</button>
-                    <button class="filter-btn" onclick="Game.filterContent('📱 Shorts', this)">Shorts</button>
-                    <button class="filter-btn" onclick="Game.filterContent('🔴 بث مباشر', this)">بث مباشر</button>
-                </div>
                 <div class="video-grid" id="video-display"></div>
+            </section>
+
+            <section id="page-amazon" class="view-section">
+                <div class="amazon-banner">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" width="120">
+                    <div class="giveaway-timer-box">
+                        <p>🎁 السحب القادم بعد:</p>
+                        <h2 id="giveaway-timer">00:00</h2>
+                    </div>
+                </div>
+                <div class="amazon-grid" id="amazon-products">
+                    </div>
             </section>
 
             <section id="page-bank" class="view-section">
@@ -60,39 +66,17 @@
                         <h1 id="stat-money-bank">$0.00</h1>
                     </div>
                     <div class="security-card-giant">
-                        <h3>🛡️ نظام أمن القناة</h3>
-                        <p id="shield-text" style="font-weight: bold; margin: 10px 0;">الحماية: غير مفعلة</p>
-                        <p id="shield-timer" style="color: #666; font-size: 14px; margin-bottom: 20px;">أنت معرض لسرقة 15% من أموالك!</p>
-                        <button class="giant-shield-btn" onclick="Game.buyShield()">شراء حماية ضد الاختراق ($1,000)</button>
+                        <h3>🛡️ أمن القناة</h3>
+                        <p id="shield-text">الحماية: غير مفعلة</p>
+                        <button class="giant-shield-btn" onclick="Game.buyShield()">شراء حماية ($1,000)</button>
                     </div>
-                    <div class="bank-info-row">أرباح معلقة: <span id="pending-display">$0.00</span></div>
-                    <div class="bank-info-row">الوقت المتبقي للسحب: <span id="timer">10:00</span></div>
                 </div>
             </section>
 
             <section id="page-studio" class="view-section">
                 <div class="studio-card">
-                    <h1 class="giant-title">🎬 نشر محتوى جديد</h1>
-                    <div class="giant-input-group">
-                        <label>العنوان</label>
-                        <input type="text" id="input-title" class="mega-input" placeholder="عنوان المقطع...">
-                    </div>
-                    <div class="giant-input-group">
-                        <label>الشكل</label>
-                        <select id="input-style" class="mega-input">
-                            <option value="🎥 فيديو طويل">🎥 فيديو طويل</option>
-                            <option value="📱 Shorts">📱 Shorts</option>
-                            <option value="🔴 بث مباشر">🔴 بث مباشر</option>
-                        </select>
-                    </div>
-                    <div class="giant-input-group">
-                        <label>النوع</label>
-                        <select id="input-type" class="mega-input">
-                            <option value="ألعاب">🎮 ألعاب</option>
-                            <option value="فلوق">🤳 فلوق</option>
-                            <option value="تقنية">💻 تقنية</option>
-                        </select>
-                    </div>
+                    <h1>🎬 نشر محتوى</h1>
+                    <input type="text" id="input-title" class="mega-input" placeholder="عنوان المقطع...">
                     <button class="giant-pub-btn" onclick="Game.publish()">نشر الآن 🚀</button>
                 </div>
             </section>
@@ -103,7 +87,6 @@
         </main>
     </div>
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
