@@ -1,90 +1,177 @@
-:root {
-    --primary: #ff0000;
-    --dark: #0f0f0f;
-    --white: #ffffff;
-    --gray: #f2f2f2;
-    --gold: #ffb100;
-    --blue: #065fd4;
-    --green: #2ecc71;
-}
+const Game = {
+    money: 1500, subs: 0, videos: [], inventory: [],
+    channelName: "قناة الأساطير", avatar: "👤", currentFilter: 'all',
+    activeGv: { active: false, timer: 0, item: "", participants: 0 },
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-body { background: var(--gray); direction: rtl; height: 100vh; overflow: hidden; }
+    init() {
+        this.load();
+        this.generateAmazon();
+        this.updateUI();
+        this.renderVideos();
+        this.startEngine();
+    },
 
-.main-wrapper { display: flex; height: 100vh; width: 100vw; }
+    save() {
+        const data = {
+            money: this.money, subs: this.subs, videos: this.videos,
+            inventory: this.inventory, channelName: this.channelName, avatar: this.avatar
+        };
+        localStorage.setItem('YT_SIM_V5_FIXED', JSON.stringify(data));
+    },
 
-/* الشريط الجانبي المطور */
-.sidebar-nav {
-    width: 300px;
-    background: var(--white);
-    border-left: 2px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    padding: 25px;
-    flex-shrink: 0;
-}
+    load() {
+        const saved = localStorage.getItem('YT_SIM_V5_FIXED');
+        if (saved) Object.assign(this, JSON.parse(saved));
+    },
 
-.nav-brand { font-size: 26px; font-weight: 900; color: var(--primary); text-align: center; margin-bottom: 40px; }
+    publishVideo() {
+        const titleInput = document.getElementById('video-title');
+        const styleInput = document.getElementById('video-style');
+        
+        if (!titleInput.value.trim()) {
+            this.showToast("⚠️ يا بطل اكتب عنوان الفيديو!", "error");
+            return;
+        }
 
-.nav-links { display: flex; flex-direction: column; gap: 15px; }
+        let baseViews = Math.floor(Math.random() * 5000 + 100);
+        this.videos.unshift({
+            title: titleInput.value,
+            style: styleInput.value,
+            views: baseViews
+        });
 
-.nav-btn {
-    width: 100%;
-    padding: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    text-align: right;
-    background: #f8f8f8;
-    color: #333;
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        this.subs += Math.floor(baseViews * 0.02);
+        this.money += Math.floor(baseViews * 0.012);
+        
+        titleInput.value = "";
+        this.showToast("🚀 تم نشر المقطع بنجاح!", "success");
+        this.save(); this.updateUI(); this.renderVideos();
+    },
 
-.nav-btn:hover { background: #eee; transform: translateX(-10px); }
-.nav-btn.active { background: #fee; color: var(--primary); border: 2px solid var(--primary); }
-.gv-btn { background: #fff8e1; color: #ff8f00; }
-.amz-btn { background: #e8f5e9; color: #2e7d32; }
+    generateAmazon() {
+        const products = [
+            {n: "Sony PS5 Pro", p: 700, i: "🎮"},
+            {n: "Gaming PC Ultra", p: 3000, i: "🖥️"},
+            {n: "iPhone 15 Max", p: 1200, i: "📱"},
+            {n: "Mouse & Keyboard", p: 150, i: "⌨️"}
+        ];
+        const grid = document.getElementById('amazon-products');
+        grid.innerHTML = "";
+        for (let i = 0; i < 50; i++) {
+            const it = products[i % products.length];
+            const price = it.p + (i * 12);
+            grid.innerHTML += `
+                <div class="v-card" style="padding: 20px; text-align: center;">
+                    <div style="font-size: 50px;">${it.i}</div>
+                    <h3 style="margin: 15px 0;">${it.n}</h3>
+                    <p style="color: #e67e22; font-weight: bold; font-size: 24px;">$${price}</p>
+                    <button class="btn-action blue" style="padding: 10px; font-size: 16px; margin-top: 10px;" onclick="Game.buyItem('${it.n}', ${price})">شراء</button>
+                </div>`;
+        }
+    },
 
-.nav-footer { margin-top: auto; }
-.btn-reset { width: 100%; padding: 12px; background: none; border: 1px solid #ccc; border-radius: 10px; cursor: pointer; color: #666; }
+    buyItem(n, p) {
+        if (this.money >= p) {
+            this.money -= p;
+            this.inventory.push(n);
+            this.showToast(`🛍️ تم شراء ${n} بنجاح!`, "success");
+            this.updateInventorySelect();
+            this.save(); this.updateUI();
+        } else this.showToast("❌ فلوسك ما تكفي يا بطل!", "error");
+    },
 
-/* المنطقة الرئيسية */
-.content-view { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-.top-header { height: 80px; background: var(--white); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
-.stats-bar { display: flex; gap: 20px; }
-.stat-pill { padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 20px; border: 1px solid #ddd; }
-.money { background: #e6f4ea; color: #1e7e34; }
-.subs { background: #fdf2f2; color: #c82333; }
+    updateInventorySelect() {
+        const sel = document.getElementById('gv-inventory-select');
+        if (!sel) return;
+        sel.innerHTML = this.inventory.length > 0 
+            ? this.inventory.map((it, idx) => `<option value="${idx}">${it}</option>`).join('')
+            : "<option>المخزن فارغ (اشترِ من المتجر)</option>";
+    },
 
-.scroll-area { flex-grow: 1; overflow-y: auto; padding: 40px; }
-.page { display: none; }
-.page.active { display: block; animation: slideIn 0.3s forwards; }
+    startGiveaway() {
+        if (this.inventory.length === 0) return this.showToast("⚠️ ما عندك جوائز!", "error");
+        if (this.activeGv.active) return this.showToast("⚠️ فيه سحب شغال حالياً!", "error");
 
-@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        const idx = document.getElementById('gv-inventory-select').value;
+        const it = this.inventory[idx];
+        this.activeGv = { active: true, timer: 20, item: it, participants: 0 };
+        this.inventory.splice(idx, 1);
 
-/* الكروت والتصميمات */
-.card-form { background: #fff; padding: 40px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); max-width: 700px; margin: 0 auto; }
-.input-pro { width: 100%; padding: 18px; margin: 15px 0; border-radius: 15px; border: 2px solid #eee; font-size: 18px; outline: none; }
-.btn-action { width: 100%; padding: 22px; border: none; border-radius: 15px; font-size: 22px; font-weight: bold; color: #fff; cursor: pointer; }
-.red { background: var(--primary); }
-.gold { background: var(--gold); }
-.blue { background: var(--blue); }
+        this.videos.unshift({ title: `🎁 قيفاوي مباشر على ${it}`, style: "🎁 قيفاوي", views: 0 });
+        document.getElementById('gv-live-box').classList.remove('hidden');
+        this.updateInventorySelect();
+        this.renderVideos();
+    },
 
-/* القيفاوي لايف */
-.live-panel { background: #fff3cd; border: 3px dashed #ff8f00; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; }
-.live-tag { color: red; font-weight: 900; font-size: 24px; animation: pulse 1s infinite; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    startEngine() {
+        setInterval(() => {
+            if (this.activeGv.active) {
+                this.activeGv.timer--;
+                this.activeGv.participants += Math.floor(this.subs * 0.1 + Math.random() * 100);
+                if (this.activeGv.timer <= 0) this.endGiveaway();
+                this.updateGvUI();
+            }
+        }, 1000);
+    },
 
-/* الشبكات */
-.content-grid, .amazon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
-.v-card { background: #fff; border-radius: 20px; border: 1px solid #ddd; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.v-thumb { height: 180px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #fff; }
+    endGiveaway() {
+        this.activeGv.active = false;
+        document.getElementById('gv-live-box').classList.add('hidden');
+        const bonus = Math.floor(this.activeGv.participants * 0.1);
+        this.subs += bonus;
+        this.videos[0].views = this.activeGv.participants;
+        this.showToast(`🎊 مبروك! كسبت ${bonus} مشترك!`, "success");
+        this.save(); this.updateUI(); this.renderVideos();
+    },
 
-/* الإشعارات */
-#toast-container { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); padding: 18px 50px; border-radius: 15px; color: #fff; font-size: 20px; z-index: 9999; font-weight: bold; transition: 0.5s; }
-.toast-success { background: #27ae60; }
-.toast-error { background: #e74c3c; }
-.toast-hidden { top: -100px; opacity: 0; }
-.hidden { display: none; }
+    updateGvUI() {
+        document.getElementById('live-item').innerText = this.activeGv.item;
+        document.getElementById('live-count').innerText = this.activeGv.participants.toLocaleString();
+        document.getElementById('live-timer').innerText = this.activeGv.timer + " ث";
+    },
+
+    renderVideos() {
+        const cont = document.getElementById('video-display');
+        cont.innerHTML = this.videos.map(v => `
+            <div class="v-card">
+                <div class="v-thumb">${v.style.includes('Shorts') ? '📱' : '🎬'}</div>
+                <div style="padding: 15px;">
+                    <h3>${v.title}</h3>
+                    <p style="color: #666; font-size: 14px; margin-top: 5px;">${v.views.toLocaleString()} مشاهدة • ${v.style}</p>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    switchPage(id, btn) {
+        document.querySelectorAll('.page').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (id === 'page-giveaway') this.updateInventorySelect();
+    },
+
+    updateUI() {
+        document.getElementById('stat-money').innerText = `$${this.money.toLocaleString()}`;
+        document.getElementById('stat-money-bank').innerText = `$${this.money.toLocaleString()}`;
+        document.getElementById('stat-subs').innerText = this.subs.toLocaleString();
+        document.getElementById('channel-name-display').innerText = this.channelName;
+        document.getElementById('pfp-display').innerText = this.avatar;
+    },
+
+    showToast(m, t) {
+        const el = document.getElementById('toast-container');
+        el.innerText = m; el.className = `toast-${t}`;
+        el.classList.remove('toast-hidden');
+        setTimeout(() => el.classList.add('toast-hidden'), 3000);
+    },
+
+    customizeChannel() {
+        const n = prompt("اسم القناة الجديد:", this.channelName);
+        if (n) { this.channelName = n; this.save(); this.updateUI(); }
+    },
+
+    resetGame() { if(confirm("حذف كل شيء؟")) { localStorage.clear(); location.reload(); } }
+};
+
+window.onload = () => Game.init();
