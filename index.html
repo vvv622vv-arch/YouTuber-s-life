@@ -3,88 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youtuber Sim - FIX</title>
+    <title>محاكي اليوتيوبر - الإصدار الذهبي</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="toast-container" class="toast-hidden"></div>
 
-<div class="app-container">
-    <aside class="main-sidebar">
-        <div class="sidebar-header">STUDIO</div>
+<div class="main-wrapper">
+    <aside class="sidebar-nav">
+        <div class="nav-brand">YOUTUBER PRO</div>
         
-        <button class="nav-button active" onclick="Game.switchPage('page-channel', this)">🏠 قناتي</button>
-        <button class="nav-button" onclick="Game.switchPage('page-studio', this)">🎬 الاستوديو</button>
-        <button class="nav-button gv-btn" onclick="Game.switchPage('page-giveaway', this)">🎁 القيفاوي</button>
-        <button class="nav-button amz-btn" onclick="Game.switchPage('page-amazon', this)">🛒 المتجر</button>
-        <button class="nav-button" onclick="Game.switchPage('page-bank', this)">🏦 البنك</button>
-        
-        <div class="spacer"></div>
-        <button class="reset-btn" onclick="Game.resetGame()">♻️ تصفير</button>
+        <nav class="nav-links">
+            <button class="nav-btn active" onclick="Game.switchPage('page-channel', this)">🏠 قناتي</button>
+            <button class="nav-btn studio-btn" onclick="Game.switchPage('page-studio', this)">🎥 الاستوديو</button>
+            <button class="nav-btn gv-btn" onclick="Game.switchPage('page-giveaway', this)">🎁 القيفاوي</button>
+            <button class="nav-btn amz-btn" onclick="Game.switchPage('page-amazon', this)">🛒 المتجر</button>
+            <button class="nav-btn bank-btn" onclick="Game.switchPage('page-bank', this)">🏦 البنك</button>
+        </nav>
+
+        <div class="nav-footer">
+            <button class="btn-reset" onclick="Game.resetGame()">♻️ إعادة ضبط الحساب</button>
+        </div>
     </aside>
 
-    <main class="main-view">
-        <header class="top-bar">
-            <div class="user-stats">
-                <div class="stat">💵 <span id="stat-money">0</span></div>
-                <div class="stat">👥 <span id="stat-subs">0</span></div>
+    <main class="content-view">
+        <header class="top-header">
+            <div class="stats-bar">
+                <div class="stat-pill money">💵 <span id="stat-money">0</span></div>
+                <div class="stat-pill subs">👥 <span id="stat-subs">0</span></div>
             </div>
-            <div class="channel-info-top" id="channel-name-display">تحميل...</div>
+            <div class="channel-title" id="channel-name-display" onclick="Game.customizeChannel()">تحميل...</div>
         </header>
 
-        <section id="page-channel" class="page-section active">
-            <div class="hero-section">
-                <div class="big-pfp" id="pfp-display" onclick="Game.customizeChannel()">👤</div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" onclick="Game.filterContent('all', this)">الكل</button>
-                    <button class="tab-btn" onclick="Game.filterContent('🎥 فيديو', this)">فيديوهات</button>
-                    <button class="tab-btn" onclick="Game.filterContent('📱 Shorts', this)">Shorts</button>
-                    <button class="tab-btn" onclick="Game.filterContent('🎁 قيفاوي', this)">المسابقات</button>
+        <div class="scroll-area">
+            <section id="page-channel" class="page active">
+                <div class="profile-section">
+                    <div class="pfp-big" id="pfp-display">👤</div>
                 </div>
-            </div>
-            <div class="video-grid" id="video-display"></div>
-        </section>
+                <div class="content-grid" id="video-display"></div>
+            </section>
 
-        <section id="page-studio" class="page-section">
-            <div class="form-box">
-                <h2>🎬 نشر محتوى جديد</h2>
-                <input type="text" id="video-title" class="huge-input" placeholder="عنوان المقطع...">
-                <select id="video-style" class="huge-input">
-                    <option value="🎥 فيديو">🎥 فيديو طويل</option>
-                    <option value="📱 Shorts">📱 Shorts</option>
-                    <option value="🔴 بث مباشر">🔴 بث مباشر</option>
-                </select>
-                <button class="action-btn-red" onclick="Game.publishVideo()">نشر الآن 🚀</button>
-            </div>
-        </section>
-
-        <section id="page-giveaway" class="page-section">
-            <div class="form-box">
-                <h2>🎁 إطلاق قيفاوي</h2>
-                <label>الجائزة من مخزنك:</label>
-                <select id="gv-inventory-select" class="huge-input"></select>
-                <button class="action-btn-gold" onclick="Game.startGiveaway()">بدء السحب 🚀</button>
-                <div id="gv-live-panel" class="live-status hidden">
-                    <h3>بث السحب المباشر</h3>
-                    <p>الجائزة: <span id="live-item">--</span></p>
-                    <p>المشاركون: <span id="live-count">0</span></p>
-                    <p>الوقت: <span id="live-timer">00</span></p>
+            <section id="page-studio" class="page">
+                <div class="card-form">
+                    <h2>🎬 نشر فيديو جديد</h2>
+                    <input type="text" id="video-title" class="input-pro" placeholder="اكتب عنواناً جذاباً للفيديو...">
+                    <select id="video-style" class="input-pro">
+                        <option value="🎥 فيديو">🎥 فيديو طويل</option>
+                        <option value="📱 Shorts">📱 Shorts</option>
+                        <option value="🔴 بث مباشر">🔴 بث مباشر</option>
+                    </select>
+                    <button class="btn-action red" onclick="Game.publishVideo()">نشر الآن 🚀</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="page-amazon" class="page-section">
-            <div class="amazon-title">🛒 متجر الجوائز (أمازون)</div>
-            <div class="amazon-container" id="amazon-products"></div>
-        </section>
+            <section id="page-giveaway" class="page">
+                <div class="card-form">
+                    <h2>🎁 إطلاق مسابقة قيفاوي</h2>
+                    <p>اختر الجائزة من مخزنك (يجب الشراء من أمازون أولاً)</p>
+                    <select id="gv-inventory-select" class="input-pro"></select>
+                    <button class="btn-action gold" onclick="Game.startGiveaway()">بدء السحب المباشر 🔥</button>
+                    
+                    <div id="gv-live-box" class="live-panel hidden">
+                        <div class="live-tag">LIVE</div>
+                        <p>الجائزة: <span id="live-item">--</span></p>
+                        <p>المشاركون: <span id="live-count">0</span></p>
+                        <p>الوقت المتبقي: <span id="live-timer">00</span></p>
+                    </div>
+                </div>
+            </section>
 
-        <section id="page-bank" class="page-section">
-            <div class="bank-box">
-                <h1>رصيدك البنكي: <span id="stat-money-bank">$0</span></h1>
-                <button class="action-btn-blue" onclick="Game.buyShield()">تأمين القناة ضد الهكر ($1,500)</button>
-            </div>
-        </section>
+            <section id="page-amazon" class="page">
+                <div class="amazon-header">🛒 متجر أمازون للجوائز</div>
+                <div class="amazon-grid" id="amazon-products"></div>
+            </section>
+
+            <section id="page-bank" class="page">
+                <div class="bank-card">
+                    <div class="visa-style">
+                        <small>إجمالي الرصيد</small>
+                        <h1 id="stat-money-bank">$0</h1>
+                    </div>
+                    <button class="btn-action blue" onclick="Game.buyShield()">شراء حماية ضد الهكر ($1,500)</button>
+                </div>
+            </section>
+        </div>
     </main>
 </div>
 
