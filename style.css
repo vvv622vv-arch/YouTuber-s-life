@@ -1,58 +1,63 @@
-:root { --yt-red: #ff0000; --amz-navy: #232f3e; --amz-gold: #febd69; --bg: #f1f1f1; }
-* { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
-body { background: var(--bg); direction: rtl; height: 100vh; overflow: hidden; }
+:root { --main-red: #ff0000; --dark: #0f0f0f; --gray: #f1f1f1; --blue: #065fd4; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+body { background: var(--gray); direction: rtl; height: 100vh; overflow: hidden; }
 
 /* الهيدر */
-.yt-header { background: #fff; height: 56px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid #ddd; }
-.logo { font-weight: bold; font-size: 20px; }
-.studio-text { color: #606060; font-weight: normal; }
-.money-badge { background: #e6f4ea; color: #2ba640; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+.yt-header { background: #fff; height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; border-bottom: 1px solid #ddd; }
+.logo { font-size: 22px; font-weight: bold; color: var(--dark); }
+.money-badge { background: #e6f4ea; color: #2ba640; padding: 8px 18px; border-radius: 25px; font-weight: bold; border: 1px solid #2ba640; }
 
-/* القائمة الجانبية */
-.main-layout { display: flex; height: calc(100vh - 56px); }
-.sidebar { width: 240px; background: #fff; border-left: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; }
-.side-btn { width: 100%; padding: 12px; border: none; background: none; text-align: right; border-radius: 8px; cursor: pointer; margin-bottom: 5px; font-size: 14px; }
-.side-btn.active { background: #f2f2f2; color: var(--yt-red); font-weight: bold; }
-.amazon-tab { background: #fafff0; border: 1px solid #c4d600; color: #444 !important; }
-.giveaway-tab { background: #fff5f5; border: 1px solid #ffcccc; color: #d32f2f !important; }
+/* القائمة الجانبية - إصلاح التراص */
+.main-layout { display: flex; height: calc(100vh - 65px); }
+.sidebar { width: 260px; background: #fff; border-left: 1px solid #ddd; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+
+/* الأزرار الكبيرة جداً والقوية */
+.nav-btn { 
+    width: 100%; 
+    padding: 16px; 
+    border: none; 
+    background: #f8f8f8; 
+    text-align: right; 
+    border-radius: 12px; 
+    font-size: 18px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: 0.2s;
+    color: #333;
+}
+.nav-btn:hover { background: #ececec; transform: translateX(-5px); }
+.nav-btn.active { background: #fee; color: var(--main-red); }
+.amz-btn { background: #fff9e6; color: #c45500; border: 1px solid #fed813; }
+.gv-btn { background: #f0f7ff; color: #0056b3; border: 1px solid #cce5ff; }
 
 /* المحتوى */
-.content-area { flex: 1; overflow-y: auto; padding-bottom: 50px; }
+.content-area { flex: 1; overflow-y: auto; padding: 25px; }
 .view-section { display: none; }
 .view-section.active { display: block; }
 
-/* القناة */
-.channel-hero { background: #fff; padding: 40px; text-align: center; border-bottom: 1px solid #ddd; }
-.pfp-main { width: 110px; height: 110px; background: #065fd4; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #fff; cursor: pointer; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.sub-count { color: #606060; margin-top: 10px; font-size: 18px; }
+/* الكروت والأشكال */
+.form-card { background: #fff; padding: 30px; border-radius: 15px; border: 1px solid #ddd; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.main-input { width: 100%; padding: 15px; margin: 10px 0 20px; border-radius: 10px; border: 2px solid #eee; font-size: 16px; }
 
-/* أمازون */
-.amazon-branding { background: var(--amz-navy); color: #fff; padding: 20px; text-align: center; }
-.amazon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; background: #eaeded; }
-.amazon-card { background: #fff; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
-.buy-amz-btn { background: #ffd814; border: 1px solid #fcd200; padding: 8px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-
-/* الاستوديو */
-.studio-card { max-width: 550px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #ddd; }
-.input-group { margin-bottom: 20px; }
-.input-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
-.action-btn-red { width: 100%; padding: 15px; background: var(--yt-red); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-.action-btn-gold { width: 100%; padding: 15px; background: var(--amz-gold); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+/* أزرار الأكشن */
+.publish-btn { width: 100%; padding: 18px; background: var(--main-red); color: #fff; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
+.gv-launch-btn { width: 100%; padding: 18px; background: #fb8c00; color: #fff; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
 
 /* الفيديوهات */
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; padding: 25px; }
-.v-card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #ddd; }
-.thumb { width: 100%; height: 130px; background: #f2f2f2; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; }
+.v-card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #ddd; transition: 0.3s; }
+.v-card:hover { transform: translateY(-5px); }
+.thumb { height: 150px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff; }
 
-/* القيفاوي */
-.live-gv-box { margin-top: 20px; padding: 20px; background: #fff4e5; border: 2px dashed #ffb74d; border-radius: 10px; text-align: center; }
-.hidden { display: none; }
-.pulse-red { color: red; font-weight: bold; animation: pulse 1s infinite; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+/* نظام القيفاوي لايف */
+.gv-live { background: #fff3cd; border: 2px dashed #ff8f00; padding: 20px; margin-top: 20px; border-radius: 15px; text-align: center; }
+.pulse { color: red; font-weight: bold; animation: pulse-anim 1s infinite; }
+@keyframes pulse-anim { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-/* التوست */
-#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 30px; border-radius: 6px; color: #fff; z-index: 10000; transition: 0.3s; }
-.toast-success { background: #2ba640; }
-.toast-error { background: #d32f2f; }
+/* الإشعارات */
+#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; border-radius: 10px; color: #fff; font-weight: bold; z-index: 10000; transition: 0.4s; }
+.toast-success { background: #2ecc71; }
+.toast-error { background: #e74c3c; }
 .toast-hidden { top: -100px; opacity: 0; }
+
+.hidden { display: none; }
