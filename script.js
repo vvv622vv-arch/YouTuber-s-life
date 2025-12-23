@@ -1,27 +1,29 @@
 const Game = {
-    // 1. البيانات الأساسية
-    money: 100,
+    // 1. البيانات المتغيرة
+    money: 200,
     subs: 0,
     vids: 0,
     power: 1.0,
     videos: [],
+    inventory: [], // لتخزين جوائز أمازون
     shieldTime: 0,
-    giveawayTimer: 300,
-    giveawayEntries: [],
-    channelName: "قناة جديدة",
+    channelName: "قناتي الجديدة",
     avatar: "👤",
     currentFilter: 'all',
+    
+    // بيانات القيفاوي الحالي
+    activeGv: { active: false, timer: 0, item: "", participants: 0 },
 
     init() {
-        this.load(); // تحميل البيانات أولاً
-        this.generateAmazon();
-        this.generateShop();
-        this.startMainLoop();
+        this.load();
+        this.generateAmazonProducts();
         this.updateUI();
         this.renderVideos();
+        this.updateInventoryList();
+        this.startMainEngine();
     },
 
-    // 2. نظام الحفظ الواقعي
+    // 2. نظام حفظ البيانات
     save() {
         const data = {
             money: this.money,
@@ -29,111 +31,156 @@ const Game = {
             vids: this.vids,
             power: this.power,
             videos: this.videos,
+            inventory: this.inventory,
             shieldTime: this.shieldTime,
             channelName: this.channelName,
             avatar: this.avatar
         };
-        localStorage.setItem('YT_STUDIO_SAVE_DATA', JSON.stringify(data));
+        localStorage.setItem('YT_SIM_ULTIMATE_SAVE', JSON.stringify(data));
     },
 
     load() {
-        const saved = localStorage.getItem('YT_STUDIO_SAVE_DATA');
+        const saved = localStorage.getItem('YT_SIM_ULTIMATE_SAVE');
         if (saved) {
             const parsed = JSON.parse(saved);
             Object.assign(this, parsed);
         }
     },
 
-    // 3. نظام النشر (مع البث المباشر)
-    publish() {
-        const titleInput = document.getElementById('input-title');
-        const styleInput = document.getElementById('input-style');
-        
-        if (!titleInput.value) return this.showToast("أدخل عنواناً للمحتوى!", "error");
-
-        let views = Math.floor((Math.random() * 4000 + 500) * this.power);
-        const newVideo = {
-            title: titleInput.value,
-            style: styleInput.value,
-            views: views,
-            date: new Date().toLocaleDateString()
-        };
-
-        this.videos.unshift(newVideo);
-        this.subs += Math.floor(views * 0.015);
-        this.money += Math.floor(views * 0.008);
-        this.vids++;
-
-        titleInput.value = ""; // تصفير الحقل
-        this.save();
-        this.updateUI();
-        this.renderVideos();
-        this.showToast("تم النشر بنجاح!", "success");
-    },
-
-    // 4. نظام أمازون والقيفاوي
-    generateAmazon() {
-        const grid = document.getElementById('amazon-products');
-        const items = [
-            {n: "PS5 Console", p: 499, i: "🎮"},
-            {n: "Gaming PC High", p: 2500, i: "🖥️"},
-            {n: "RTX 4090 GPU", p: 1600, i: "⚙️"},
-            {n: "iPhone 15", p: 999, i: "📱"},
-            {n: "Gaming Monitor", p: 400, i: "📺"}
+    // 3. متجر أمازون الواقعي
+    generateAmazonProducts() {
+        const categories = [
+            {n: "PS5 Console", p: 500, i: "🎮"},
+            {n: "Gaming PC RTX 4090", p: 3500, i: "🖥️"},
+            {n: "Xbox Series X", p: 480, i: "🕹️"},
+            {n: "Curved Gaming Screen", p: 800, i: "📺"},
+            {n: "iPhone 15 Pro", p: 1100, i: "📱"}
         ];
-
+        const grid = document.getElementById('amazon-products');
         grid.innerHTML = "";
+        
         for (let i = 0; i < 100; i++) {
-            const template = items[i % items.length];
-            const price = template.p + (i * 12);
+            const item = categories[i % categories.length];
+            const price = item.p + (i * 5);
             grid.innerHTML += `
                 <div class="amazon-card">
-                    <div style="font-size:40px; text-align:center;">${template.i}</div>
-                    <h4 style="font-size:13px;">${template.n} #PRO-${i+1}</h4>
+                    <div style="font-size:45px; text-align:center;">${item.i}</div>
+                    <h4 style="font-size:13px; margin:10px 0;">${item.n} - V${i+1}</h4>
                     <p style="font-weight:bold; color:#B12704;">$${price.toLocaleString()}</p>
-                    <button class="buy-amz-btn" onclick="Game.buyAmazon('${template.n}', ${price})">شراء ودخول السحب</button>
+                    <button class="buy-amz-btn" onclick="Game.buyForInventory('${item.n}', ${price})">شراء للمخزن</button>
                 </div>`;
         }
     },
 
-    buyAmazon(name, price) {
+    buyForInventory(name, price) {
         if (this.money >= price) {
             this.money -= price;
-            this.giveawayEntries.push(name);
-            this.showToast(`تم شراء ${name} ودخلت السحب!`, "success");
-            this.save();
+            this.inventory.push(name);
+            this.showToast(`تم شراء ${name}، وهي الآن في مخزن الجوائز!`, "success");
+            this.updateInventoryList();
             this.updateUI();
+            this.save();
         } else {
-            this.showToast("الرصيد غير كافٍ في محفظتك!", "error");
+            this.showToast("رصيدك لا يكفي لشراء هذه الجائزة!", "error");
         }
     },
 
-    // 5. المحرك الرئيسي (Loop)
-    startMainLoop() {
+    updateInventoryList() {
+        const sel = document.getElementById('gv-inventory-select');
+        if (!sel) return;
+        sel.innerHTML = this.inventory.length > 0 
+            ? this.inventory.map((item, index) => `<option value="${index}">${item}</option>`).join('')
+            : "<option>المخزن فارغ (اشترِ من أمازون)</option>";
+    },
+
+    // 4. نظام القيفاوي (المسابقات)
+    startGiveaway() {
+        if (this.inventory.length === 0) return this.showToast("لا تملك جوائز لتوزيعها!", "error");
+        if (this.activeGv.active) return this.showToast("هناك سحب جارٍ بالفعل!", "error");
+
+        const invIdx = document.getElementById('gv-inventory-select').value;
+        const duration = parseInt(document.getElementById('gv-duration').value);
+        const itemName = this.inventory[invIdx];
+
+        // تفعيل السحب
+        this.activeGv = { active: true, timer: duration, item: itemName, participants: 0 };
+        this.inventory.splice(invIdx, 1); // حذف من المخزن
+
+        // نشر فيديو القيفاوي
+        this.videos.unshift({
+            title: `🎁 مسابقة كبرى على ${itemName} - شاركوا!`,
+            style: "🎁 قيفاوي",
+            views: 0
+        });
+
+        document.getElementById('live-gv-status').classList.remove('hidden');
+        this.updateInventoryList();
+        this.renderVideos();
+        this.showToast("تم نشر فيديو المسابقة بنجاح!", "success");
+        this.save();
+    },
+
+    // 5. المحرك الزمني الرئيسي
+    startMainEngine() {
         setInterval(() => {
-            // عداد القيفاوي
-            if (this.giveawayTimer > 0) {
-                this.giveawayTimer--;
-            } else {
-                this.runGiveawayDraw();
-                this.giveawayTimer = 300;
+            if (this.activeGv.active) {
+                this.activeGv.timer--;
+                // زيادة المشاركين بناءً على عدد المشتركين الحقيقيين + عشوائية
+                this.activeGv.participants += Math.floor(this.subs * 0.1 + Math.random() * 20 + 1);
+                
+                if (this.activeGv.timer <= 0) {
+                    this.endGiveaway();
+                }
+                this.updateGvUI();
             }
-
             if (this.shieldTime > 0) this.shieldTime--;
-
             this.updateUI();
         }, 1000);
     },
 
-    runGiveawayDraw() {
-        if (this.giveawayEntries.length > 0) {
-            const win = this.giveawayEntries[Math.floor(Math.random() * this.giveawayEntries.length)];
-            alert(`🎁 مبروك! فزت في سحب أمازون على: ${win}`);
-            this.giveawayEntries = [];
-        }
+    endGiveaway() {
+        this.activeGv.active = false;
+        document.getElementById('live-gv-status').classList.add('hidden');
+        
+        // نتائج المسابقة (زيادة مشتركين هائلة)
+        const bonusSubs = Math.floor(this.activeGv.participants * 0.2);
+        this.subs += bonusSubs;
+        this.videos[0].views = this.activeGv.participants; // تحديث مشاهدات الفيديو
+
+        alert(`🎊 انتهى السحب!\nالجائزة: ${this.activeGv.item}\nالمشاركون: ${this.activeGv.participants}\nلقد حصلت على ${bonusSubs.toLocaleString()} مشترك جديد!`);
+        this.save();
+        this.updateUI();
+        this.renderVideos();
     },
 
-    // 6. واجهة المستخدم والتعديل
+    updateGvUI() {
+        document.getElementById('live-item').innerText = this.activeGv.item;
+        document.getElementById('live-count').innerText = this.activeGv.participants.toLocaleString();
+        document.getElementById('live-timer').innerText = this.activeGv.timer + "ث";
+    },
+
+    // 6. النشر العادي
+    publishVideo() {
+        const title = document.getElementById('video-title').value;
+        const style = document.getElementById('video-style').value;
+        if (!title) return this.showToast("أدخل عنواناً للمقطع!", "error");
+
+        let baseViews = Math.floor(Math.random() * 5000 + 200);
+        let finalViews = Math.floor(baseViews * this.power);
+        
+        this.videos.unshift({ title, style, views: finalViews });
+        this.subs += Math.floor(finalViews * 0.02);
+        this.money += Math.floor(finalViews * 0.015);
+        this.vids++;
+
+        document.getElementById('video-title').value = "";
+        this.showToast("تم النشر بنجاح!", "success");
+        this.save();
+        this.updateUI();
+        this.renderVideos();
+    },
+
+    // 7. الواجهة الأساسية
     updateUI() {
         document.getElementById('stat-money').innerText = `$${Math.floor(this.money).toLocaleString()}`;
         document.getElementById('stat-money-bank').innerText = `$${Math.floor(this.money).toLocaleString()}`;
@@ -141,18 +188,34 @@ const Game = {
         document.getElementById('channel-name-display').innerText = this.channelName;
         document.getElementById('pfp-display').innerText = this.avatar;
 
-        const timerEl = document.getElementById('giveaway-timer');
-        if (timerEl) {
-            let m = Math.floor(this.giveawayTimer / 60), s = this.giveawayTimer % 60;
-            timerEl.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        const sStatus = document.getElementById('shield-status');
+        if (this.shieldTime > 0) {
+            sStatus.innerText = "🛡️ الحماية: نشطة"; sStatus.style.color = "green";
+        } else {
+            sStatus.innerText = "⚠️ الحماية: غير نشطة"; sStatus.style.color = "red";
+        }
+    },
+
+    renderVideos() {
+        const cont = document.getElementById('video-display');
+        cont.innerHTML = "";
+        const filtered = this.currentFilter === 'all' ? this.videos : this.videos.filter(v => v.style === this.currentFilter);
+        
+        if (filtered.length === 0) {
+            cont.innerHTML = "<p style='padding:20px; color:gray;'>لا توجد فيديوهات في هذا القسم.</p>";
+            return;
         }
 
-        const shieldStatus = document.getElementById('shield-status');
-        if (this.shieldTime > 0) {
-            shieldStatus.innerText = "🛡️ الحماية نشطة"; shieldStatus.style.color = "green";
-        } else {
-            shieldStatus.innerText = "⚠️ الحماية غير مفعلة"; shieldStatus.style.color = "red";
-        }
+        filtered.forEach(v => {
+            cont.innerHTML += `
+                <div class="v-card">
+                    <div class="thumb">${v.style.split(' ')[0]}</div>
+                    <div style="padding:10px;">
+                        <h4 style="font-size:14px; margin-bottom:5px;">${v.title}</h4>
+                        <p style="font-size:12px; color:#606060;">${v.views.toLocaleString()} مشاهدة • ${v.style}</p>
+                    </div>
+                </div>`;
+        });
     },
 
     filterContent(type, btn) {
@@ -162,93 +225,43 @@ const Game = {
         this.renderVideos();
     },
 
-    renderVideos() {
-        const cont = document.getElementById('video-display');
-        cont.innerHTML = "";
-        const filtered = this.currentFilter === 'all' ? this.videos : this.videos.filter(v => v.style === this.currentFilter);
-        
-        if (filtered.length === 0) {
-            cont.innerHTML = "<p style='padding:20px; color:#606060;'>لا يوجد محتوى لعرضه هنا.</p>";
-            return;
-        }
-
-        filtered.forEach(v => {
-            cont.innerHTML += `
-                <div class="v-card" style="background:#fff; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
-                    <div class="thumb" style="height:140px; background:#f2f2f2;">${v.style.split(' ')[0]}</div>
-                    <div style="padding:10px;">
-                        <h4 style="font-size:14px; margin-bottom:5px;">${v.title}</h4>
-                        <p style="font-size:12px; color:#606060;">${v.views.toLocaleString()} مشاهدة • ${v.style}</p>
-                    </div>
-                </div>`;
-        });
-    },
-
-    customizeChannel() {
-        const name = prompt("أدخل اسم القناة الجديد:", this.channelName);
-        const icon = prompt("أدخل إيموجي الأفاتار:", this.avatar);
-        if (name) this.channelName = name;
-        if (icon) this.avatar = icon;
-        this.save();
-        this.updateUI();
-    },
-
-    buyShield() {
-        if (this.money >= 1500) {
-            this.money -= 1500;
-            this.shieldTime += 3600; // ساعة كاملة
-            this.showToast("تم تفعيل نظام الحماية لمدة ساعة!", "success");
-            this.save();
-            this.updateUI();
-        } else this.showToast("رصيدك قليل جداً!", "error");
-    },
-
-    generateShop() {
-        const grid = document.getElementById('shop-display');
-        grid.innerHTML = "";
-        for (let i = 1; i <= 20; i++) {
-            let cost = i * 3000;
-            grid.innerHTML += `
-                <div style="background:#fff; padding:20px; border-radius:8px; text-align:center; border:1px solid #ddd;">
-                    <h3>تطوير الكاميرا V${i}</h3>
-                    <p style="color:green; font-weight:bold;">$${cost.toLocaleString()}</p>
-                    <button onclick="Game.buyUpgrade(${cost}, 0.8)" style="margin-top:10px; padding:8px 15px; cursor:pointer;">شراء الترقية</button>
-                </div>`;
-        }
-    },
-
-    buyUpgrade(cost, boost) {
-        if (this.money >= cost) {
-            this.money -= cost;
-            this.power += boost;
-            this.showToast("تم ترقية القناة!", "success");
-            this.save();
-            this.updateUI();
-        } else this.showToast("رصيدك لا يكفي!", "error");
-    },
-
     switchPage(id, btn) {
         document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if (id === 'page-giveaway') this.updateInventoryList();
     },
 
-    showToast(msg, type) {
-        const t = document.getElementById('toast-container');
-        t.innerText = msg;
-        t.className = type === 'success' ? 'toast-success' : 'toast-error';
-        setTimeout(() => t.classList.add('toast-hidden'), 3000);
-        t.classList.remove('toast-hidden');
+    customizeChannel() {
+        const n = prompt("تغيير اسم القناة:", this.channelName);
+        const a = prompt("إيموجي الأفاتار:", this.avatar);
+        if (n) this.channelName = n;
+        if (a) this.avatar = a;
+        this.save(); this.updateUI();
+    },
+
+    buyShield() {
+        if (this.money >= 1500) {
+            this.money -= 1500; this.shieldTime += 3600;
+            this.showToast("تم تفعيل الحماية لمدة ساعة!", "success");
+            this.save(); this.updateUI();
+        } else this.showToast("رصيدك لا يكفي!", "error");
+    },
+
+    showToast(m, t) {
+        const el = document.getElementById('toast-container');
+        el.innerText = m; el.className = t === 'success' ? 'toast-success' : 'toast-error';
+        el.classList.remove('toast-hidden');
+        setTimeout(() => el.classList.add('toast-hidden'), 3000);
     },
 
     resetGame() {
-        if (confirm("هل أنت متأكد؟ سيتم حذف كل تقدمك نهائياً!")) {
+        if (confirm("هل تريد مسح كل شيء والبدء من جديد؟")) {
             localStorage.clear();
             location.reload();
         }
     }
 };
 
-// تشغيل اللعبة
 window.onload = () => Game.init();
