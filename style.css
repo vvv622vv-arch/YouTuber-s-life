@@ -1,50 +1,58 @@
-:root { --yt-red: #ff0000; --yt-blue: #065fd4; --amz-blue: #232f3e; --amz-orange: #febd69; --bg: #f9f9f9; }
+:root { --yt-red: #ff0000; --amz-navy: #232f3e; --amz-gold: #febd69; --bg: #f1f1f1; }
 * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
 body { background: var(--bg); direction: rtl; height: 100vh; overflow: hidden; }
 
 /* الهيدر */
-.yt-header { height: 56px; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid #e5e5e5; }
-.logo { font-weight: bold; font-size: 20px; color: #000; }
-.studio-text { color: #606060; font-size: 16px; font-weight: normal; }
-.money-badge { background: #e6f4ea; color: #2ba640; padding: 6px 15px; border-radius: 4px; font-weight: bold; }
+.yt-header { background: #fff; height: 56px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid #ddd; }
+.logo { font-weight: bold; font-size: 20px; }
+.studio-text { color: #606060; font-weight: normal; }
+.money-badge { background: #e6f4ea; color: #2ba640; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
 
-/* اللياوت */
+/* القائمة الجانبية */
 .main-layout { display: flex; height: calc(100vh - 56px); }
-.sidebar { width: 250px; background: #fff; border-left: 1px solid #e5e5e5; padding: 12px; display: flex; flex-direction: column; }
-.side-btn { width: 100%; padding: 12px; border: none; background: none; text-align: right; border-radius: 8px; cursor: pointer; font-size: 14px; margin-bottom: 4px; }
-.side-btn.active { background: #f9f9f9; color: var(--yt-red); font-weight: bold; }
-.amazon-tab { background: #fff9e6; color: #c45500 !important; border: 1px solid #fed813; margin-top: 10px; }
+.sidebar { width: 240px; background: #fff; border-left: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; }
+.side-btn { width: 100%; padding: 12px; border: none; background: none; text-align: right; border-radius: 8px; cursor: pointer; margin-bottom: 5px; font-size: 14px; }
+.side-btn.active { background: #f2f2f2; color: var(--yt-red); font-weight: bold; }
+.amazon-tab { background: #fafff0; border: 1px solid #c4d600; color: #444 !important; }
+.giveaway-tab { background: #fff5f5; border: 1px solid #ffcccc; color: #d32f2f !important; }
 
-/* صفحات القناة */
-.content-area { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+/* المحتوى */
+.content-area { flex: 1; overflow-y: auto; padding-bottom: 50px; }
 .view-section { display: none; }
 .view-section.active { display: block; }
 
-.channel-hero { background: #fff; padding: 40px; text-align: center; border-bottom: 1px solid #e5e5e5; }
-.pfp-large { width: 120px; height: 120px; background: #3498db; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 50px; cursor: pointer; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.sub-count { color: #606060; margin-top: 5px; }
+/* القناة */
+.channel-hero { background: #fff; padding: 40px; text-align: center; border-bottom: 1px solid #ddd; }
+.pfp-main { width: 110px; height: 110px; background: #065fd4; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #fff; cursor: pointer; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.sub-count { color: #606060; margin-top: 10px; font-size: 18px; }
 
 /* أمازون */
-.amazon-header { background: var(--amz-blue); color: #fff; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-.giveaway-timer-box { background: var(--amz-orange); color: #000; padding: 10px 20px; border-radius: 5px; text-align: center; }
-.amazon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px; background: #eaeded; }
-.amazon-card { background: #fff; padding: 15px; border-radius: 3px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.buy-amz-btn { background: #ffd814; border: 1px solid #fcd200; padding: 8px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+.amazon-branding { background: var(--amz-navy); color: #fff; padding: 20px; text-align: center; }
+.amazon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; background: #eaeded; }
+.amazon-card { background: #fff; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
+.buy-amz-btn { background: #ffd814; border: 1px solid #fcd200; padding: 8px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
 /* الاستوديو */
-.studio-form { max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #e5e5e5; }
+.studio-card { max-width: 550px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #ddd; }
 .input-group { margin-bottom: 20px; }
 .input-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-.input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; }
-.publish-btn { width: 100%; padding: 15px; background: var(--yt-red); color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; }
+input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
+.action-btn-red { width: 100%; padding: 15px; background: var(--yt-red); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.action-btn-gold { width: 100%; padding: 15px; background: var(--amz-gold); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-/* الفلتر */
-.filter-bar { display: flex; gap: 10px; padding: 15px; justify-content: center; background: #fff; border-bottom: 1px solid #eee; }
-.filter-btn { padding: 6px 16px; border-radius: 18px; border: 1px solid #ddd; background: #f2f2f2; cursor: pointer; font-size: 14px; }
-.filter-btn.active { background: #000; color: #fff; }
+/* الفيديوهات */
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; padding: 25px; }
+.v-card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #ddd; }
+.thumb { width: 100%; height: 130px; background: #f2f2f2; display: flex; align-items: center; justify-content: center; font-size: 40px; }
 
-/* توست */
-#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 30px; border-radius: 4px; color: #fff; z-index: 9999; transition: 0.3s; }
+/* القيفاوي */
+.live-gv-box { margin-top: 20px; padding: 20px; background: #fff4e5; border: 2px dashed #ffb74d; border-radius: 10px; text-align: center; }
+.hidden { display: none; }
+.pulse-red { color: red; font-weight: bold; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* التوست */
+#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 30px; border-radius: 6px; color: #fff; z-index: 10000; transition: 0.3s; }
 .toast-success { background: #2ba640; }
-.toast-error { background: #d93025; }
+.toast-error { background: #d32f2f; }
 .toast-hidden { top: -100px; opacity: 0; }
