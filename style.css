@@ -1,68 +1,90 @@
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-body { background: #f0f2f5; height: 100vh; overflow: hidden; direction: rtl; }
+:root {
+    --primary: #ff0000;
+    --dark: #0f0f0f;
+    --white: #ffffff;
+    --gray: #f2f2f2;
+    --gold: #ffb100;
+    --blue: #065fd4;
+    --green: #2ecc71;
+}
 
-.app-container { display: flex; height: 100vh; width: 100vw; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+body { background: var(--gray); direction: rtl; height: 100vh; overflow: hidden; }
 
-/* إصلاح القائمة الجانبية لتكون عمودية دائماً وعريضة */
-.main-sidebar { 
-    width: 280px; 
-    background: #ffffff; 
-    border-left: 2px solid #ddd; 
-    display: flex; 
-    flex-direction: column; 
-    padding: 20px;
-    gap: 15px; /* مسافة بين الأزرار */
+.main-wrapper { display: flex; height: 100vh; width: 100vw; }
+
+/* الشريط الجانبي المطور */
+.sidebar-nav {
+    width: 300px;
+    background: var(--white);
+    border-left: 2px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
     flex-shrink: 0;
 }
 
-.sidebar-header { font-size: 24px; font-weight: bold; color: #ff0000; text-align: center; margin-bottom: 20px; }
+.nav-brand { font-size: 26px; font-weight: 900; color: var(--primary); text-align: center; margin-bottom: 40px; }
 
-/* أزرار ضخمة جداً */
-.nav-button {
+.nav-links { display: flex; flex-direction: column; gap: 15px; }
+
+.nav-btn {
     width: 100%;
-    padding: 18px;
-    font-size: 19px;
+    padding: 20px;
+    font-size: 20px;
     font-weight: bold;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     cursor: pointer;
     text-align: right;
-    background: #f8f9fa;
-    transition: 0.3s;
-    display: block; /* لضمان عدم وقوفها بجانب بعض */
+    background: #f8f8f8;
+    color: #333;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.nav-button:hover { background: #e9ecef; }
-.nav-button.active { background: #fee; color: #ff0000; border: 2px solid #ff0000; }
-.gv-btn { background: #fff4e5; color: #d35400; }
+.nav-btn:hover { background: #eee; transform: translateX(-10px); }
+.nav-btn.active { background: #fee; color: var(--primary); border: 2px solid var(--primary); }
+.gv-btn { background: #fff8e1; color: #ff8f00; }
 .amz-btn { background: #e8f5e9; color: #2e7d32; }
 
-.spacer { flex-grow: 1; }
-.reset-btn { padding: 10px; border-radius: 8px; border: 1px solid #ccc; background: #eee; cursor: pointer; }
+.nav-footer { margin-top: auto; }
+.btn-reset { width: 100%; padding: 12px; background: none; border: 1px solid #ccc; border-radius: 10px; cursor: pointer; color: #666; }
 
-/* منطقة المحتوى */
-.main-view { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-.top-bar { height: 70px; background: #fff; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; }
-.user-stats { display: flex; gap: 20px; font-size: 20px; font-weight: bold; }
+/* المنطقة الرئيسية */
+.content-view { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+.top-header { height: 80px; background: var(--white); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+.stats-bar { display: flex; gap: 20px; }
+.stat-pill { padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 20px; border: 1px solid #ddd; }
+.money { background: #e6f4ea; color: #1e7e34; }
+.subs { background: #fdf2f2; color: #c82333; }
 
-.page-section { display: none; padding: 30px; height: 100%; overflow-y: auto; }
-.page-section.active { display: block; }
+.scroll-area { flex-grow: 1; overflow-y: auto; padding: 40px; }
+.page { display: none; }
+.page.active { display: block; animation: slideIn 0.3s forwards; }
 
-/* الكروت والأزرار */
-.form-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-.huge-input { width: 100%; padding: 15px; margin: 10px 0 20px; font-size: 18px; border-radius: 10px; border: 2px solid #ddd; }
-.action-btn-red { width: 100%; padding: 20px; background: #ff0000; color: #fff; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; }
-.action-btn-gold { width: 100%; padding: 20px; background: #f39c12; color: #fff; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* الفيديوهات والمتجر */
-.video-grid, .amazon-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-.v-card { background: #fff; border-radius: 15px; border: 1px solid #ddd; overflow: hidden; text-align: center; padding-bottom: 10px; }
-.thumb { height: 150px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #fff; }
+/* الكروت والتصميمات */
+.card-form { background: #fff; padding: 40px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); max-width: 700px; margin: 0 auto; }
+.input-pro { width: 100%; padding: 18px; margin: 15px 0; border-radius: 15px; border: 2px solid #eee; font-size: 18px; outline: none; }
+.btn-action { width: 100%; padding: 22px; border: none; border-radius: 15px; font-size: 22px; font-weight: bold; color: #fff; cursor: pointer; }
+.red { background: var(--primary); }
+.gold { background: var(--gold); }
+.blue { background: var(--blue); }
 
-.live-status { background: #fff3cd; padding: 20px; border-radius: 15px; border: 2px dashed #ff9800; margin-top: 20px; text-align: center; }
-.hidden { display: none; }
+/* القيفاوي لايف */
+.live-panel { background: #fff3cd; border: 3px dashed #ff8f00; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; }
+.live-tag { color: red; font-weight: 900; font-size: 24px; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; border-radius: 10px; color: #fff; z-index: 9999; transition: 0.3s; font-weight: bold; }
-.toast-success { background: #28a745; }
-.toast-error { background: #dc3545; }
+/* الشبكات */
+.content-grid, .amazon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
+.v-card { background: #fff; border-radius: 20px; border: 1px solid #ddd; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+.v-thumb { height: 180px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #fff; }
+
+/* الإشعارات */
+#toast-container { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); padding: 18px 50px; border-radius: 15px; color: #fff; font-size: 20px; z-index: 9999; font-weight: bold; transition: 0.5s; }
+.toast-success { background: #27ae60; }
+.toast-error { background: #e74c3c; }
 .toast-hidden { top: -100px; opacity: 0; }
+.hidden { display: none; }
